@@ -34,9 +34,8 @@ cansend can0 01a#1234
 | INT                   | 37            | GPIO26                |                             |
 
 ## Python environement
-Da PyQt5 auf dem Raspi Probleme bereitet, funktioniert die Standardanwendung nicht. Daher muss das venv mit den site-packages installiert werden, da PyQt5 da bereits dabei ist.
 ```
-python -m venv --system-site-packages .venv
+python -m venv .venv
 ```
 Anschliessend muss das Environement aktiviert werden und die requirements geladen werden.
 ```
@@ -44,11 +43,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Redis
+## Redis falls nicht schon in setup
 ```
 sudo apt install redis-server
 ```
-UND IN REQUIREMENTS.TXT FEHLT ES AUCH NOCH
 
 ## Kommunikation
 Die Kommunikation auf dem CAN Bus erfolgt in 5 verschiedenen Use-Cases.
