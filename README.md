@@ -1,149 +1,106 @@
 # vigor_handbox
-## OS aufsetzen
-### SD flashen
-Imager Version 2.0.6 https://www.raspberrypi.com/software/
-| Parameter | Wert |
-|-----------|------|
-| Hostname | eindeutig z.B: TESTBRETT001ZERO |
-| OS | 32bit Raspi OS Lite / Trixie ohne Desktop|
-| User | admin |
-| PW | 5210 |
-| SSID | VigorHo |
-| PW |smartduengen |
-### setup
-1. ```
-   sudo apt install git
-   ```
 
-## Services
-## can.service
-1. canutils intallieren
-```
-sudo apt-get install can-utils
-```
-2. spi1 einstellen
-```
-sudo nano /boot/firmware/config.txt
-```
-am Ende hinzufügen
+## Testen CAN ohne Setup
+Damit das MCP2515-Board am SPI1 betrieben werden kann sind folgende Änderungen in */boot/firmware/config.txt* nötig:
 ```
 dtparam=spi=on
 dtoverlay=spi1-1cs,cs0_pin=16
 dtoverlay=mcp2515,spi1-0,oscillator=16000000,interrupt=26
 ```
-3. neu starten
+Für die Nutzung des MCP2515-Boards von joy-it sind momentan folgende Kommandozeileneingaben nach dem Start nötig:
 ```
-sudo reboot
+sudo ip link set can0 up type can bitrate 125000
 ```
-4. can verbindung testweise starten
+Dies kann weiter automatisiert werden, ist aber vorerst vernachlässigt worden.
+Anschliessend kann mit der folgenden Eingabe die CAN-Verbindung geprüft werden, sofern die Werkzeuge mit ```sudo apt-get install can-utils installiert``` sind:
 ```
-sudo ip link set can0 up type can bitrate 125000 restart-ms 100
-ip -details link show can0
+candump can0
 ```
-5. service aufsetzen
+Zum Testen der Verbindung für ausgehende Nachrichten kann mit dem folgenden Befehl ein Datenpaket gesendet werden:
 ```
-sudo nano /etc/systemd/system/can.service
-```
-folgenden Text rein kopieren:
-```
-[Unit]
-Description=setup can interface
-After=network.target
-
-[Service]
-Type=oneshot
-ExecStart=/sbin/ip link set can0 up type can bitrate 125000 restart-ms 100
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-```
-6. service enablen
-```
-sudo systemctl daemon-reload
-sudo systemctl enable can.service
-```
-7. service testen
-```
-sudo ip link set can0 down
-sudo systemctl start can.service
-ip -details link show can0
+cansend can0 01a#1234
 ```
 
+### Pinbelegung
+| **Board-Bezeichnung** | **Raspi-Pin** | **Raspi-Bezeichnung** | **Raspi-Alternativfunktion** |
+|------------------------|---------------|------------------------|-----------------------------|
+| VCC                   | 1             | 3v3 Power             |                             |
+| VCC1                  | 2             | 5v Power              |                             |
+| GND                   | 39            | Ground                |                             |
+| CS                    | 36            | GPIO16                | SPI1 CE0  (remapped from GPIO18)                 |
+| SO                    | 35            | GPIO19                | SPI1 MISO                  |
+| SI                    | 38            | GPIO20                | SPI1 MOSI                  |
+| CLK                   | 40            | GPIO21                | SPI1 SCLK                  |
+| INT                   | 37            | GPIO26                |                             |
 
-### display.service
-1. install bcm library
+## Python environement
+Da PyQt5 auf dem Raspi Probleme bereitet, funktioniert die Standardanwendung nicht. Daher muss das venv mit den site-packages installiert werden, da PyQt5 da bereits dabei ist.
 ```
-curl -O http://www.airspayce.com/mikem/bcm2835/bcm2835-1.75.tar.gz
+python -m venv --system-site-packages .venv
 ```
+Anschliessend muss das Environement aktiviert werden und die requirements geladen werden.
 ```
-tar zxvf bcm2835-1.75.tar.gz
-cd bcm2835-1.xx
-./configure
-make
-sudo make check
-sudo make install
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
-2. install redis-server
+
+## Redis
 ```
 sudo apt install redis-server
-sudo systemctl enable redis-server
-sudo systemctl start redis-server
 ```
-3. install hiredis
-```
-git clone https://github.com/redis/hiredis.git
-cd hiredis
-make
-sudo make install
-```
-4. fork github
-  ```
-  git clone https://github.com/danielfhnw/Vigor_TFT_Display
-  ```
-5. build library
-  ```
-  cd Vigor_TFT_Display
-  make
-  sudo make install
-  ```
-6. build example
-  ```
-  cd examples
-  make
-  echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/local.conf
-  sudo ldconfig
-```
-7. testen ob Programm läuft:
-```
-  make run
-  ```
-8. service aufsetzen
-```
-sudo nano /etc/systemd/system/display.service
-```
-folgenden Text rein kopieren:
-```
-[Unit]
-Description=start display
-After=can0.service
+UND IN REQUIREMENTS.TXT FEHLT ES AUCH NOCH
 
-[Service]
-Type=simple
-User=admin
-WorkingDirectory=/home/admin/Vigor_TFT_Display/examples
-ExecStart=/usr/bin/make run
-Restart=on-failure
+## Kommunikation
+Die Kommunikation auf dem CAN Bus erfolgt in 5 verschiedenen Use-Cases.
 
-[Install]
-WantedBy=multi-user.target
+### update
+AA und BB sind Platzhalter für die Werte der Heartbeats
+.. sind Platzhalter für die Werte der jeweiligen Register
 ```
-10. service enablen
+ADR  LSB  MSB
+0x01 0xAA 0xAA
+0x02 0xBB 0xBB
+0x99 0x11 0x00
+-> 0x11 .. ..
+0x99 0x21 0x00
+-> 0x21 .. ..
+0x99 0x12 0x00
+-> 0x12 .. ..
+0x99 0x22 0x00
+-> 0x22 .. ..
+0x99 0x05 0x00
+-> 0x05 .. ..
+0x99 0x80 0x00
+-> 0x080 .. ..
+0x99 0x81 0x00
+-> 0x81 .. ..
 ```
-sudo systemctl daemon-reload
-sudo systemctl enable display.service
+
+### neue Anschläge
+XX und YY sind Platzhalter für die Werte der neuen Anschläge
 ```
-10. service testen
+ADR  LSB  MSB
+0x12 0xXX 0xXX
+0x22 0xYY 0xYY
+0x90 0x01 0x00
 ```
-sudo systemctl start display.service
+
+### Fehler zurücksetzen
+```
+ADR  LSB  MSB
+0x90 0x02 0x00
+```
+
+### Controllerstate zurücksetzen
+```
+ADR  LSB  MSB
+0x90 0x04 0x00
+```
+
+### neue Sollwerte
+SS und TT sind Platzhalter für die Werte der neuen Anschläge
+```
+ADR  LSB  MSB
+0x10 0xSS 0xSS
+0x20 0xTT 0xTT
 ```
