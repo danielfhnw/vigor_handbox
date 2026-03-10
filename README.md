@@ -16,6 +16,61 @@ Imager Version 2.0.6 https://www.raspberrypi.com/software/
    ```
 
 ## Services
+## can.service
+1. canutils intallieren
+```
+sudo apt-get install can-utils
+```
+2. spi1 einstellen
+```
+sudo nano /boot/firmware/config.txt
+```
+am Ende hinzufügen
+```
+dtparam=spi=on
+dtoverlay=spi1-1cs,cs0_pin=16
+dtoverlay=mcp2515,spi1-0,oscillator=16000000,interrupt=26
+```
+3. neu starten
+```
+sudo reboot
+```
+4. can verbindung testweise starten
+```
+sudo ip link set can0 up type can bitrate 125000 restart-ms 100
+ip -details link show can0
+```
+5. service aufsetzen
+```
+sudo nano /etc/systemd/system/can.service
+```
+folgenden Text rein kopieren:
+```
+[Unit]
+Description=setup can interface
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ip link set can0 up type can bitrate 125000 restart-ms 100
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+6. service enablen
+```
+sudo systemctl daemon-reload
+sudo systemctl enable can.service
+```
+7. service testen
+```
+sudo ip link set can0 down
+sudo systemctl start can.service
+ip -details link show can0
+```
+
+
 ### display.service
 1. install bcm library
 ```
