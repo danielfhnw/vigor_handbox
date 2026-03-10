@@ -63,3 +63,32 @@ sudo make install
 ```
   make run
   ```
+8. service aufsetzen
+```
+sudo nano /etc/systemd/system/display.service
+```
+folgenden Text rein kopieren:
+```
+[Unit]
+Description=start display
+After=can0.service
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/Vigor_TFT_Display/examples
+ExecStart=/usr/bin/make run
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+10. service enablen
+```
+sudo systemctl daemon-reload
+sudo systemctl enable display.service
+```
+10. service testen
+```
+sudo systemctl start display.service
+```
