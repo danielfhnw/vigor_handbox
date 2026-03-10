@@ -42,25 +42,24 @@ cd hiredis
 make
 sudo make install
 ```
-5. fork github
+4. fork github
   ```
   git clone https://github.com/danielfhnw/Vigor_TFT_Display
   ```
+5. build library
   ```
   cd Vigor_TFT_Display
   make
   sudo make install
   ```
+6. build example
   ```
   cd examples
   make
   echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/local.conf
   sudo ldconfig
 ```
-zum testen ob Programm läuft:
+7. testen ob Programm läuft:
 ```
   make run
   ```
-4. build library
-5. build example
-6. 
