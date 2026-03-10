@@ -1,0 +1,2 @@
+python-can~=4.4.2
+redis~=6.2.0
