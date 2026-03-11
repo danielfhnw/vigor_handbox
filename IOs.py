@@ -8,17 +8,18 @@ from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 
 gpio_init_done = False
+device.pin_factory = PiGPIOFactory()
 
 while not gpio_init_done:
     try:
-        ti1_s0 = DigitalOutputDevice(0) # pin 27
-        ti1_s1 = DigitalOutputDevice(1) # pin 28
+        ti1_s0 = DigitalOutputDevice(22) # früher pin 27 jetzt gekreuzt mit ti2_s2 da gpio 0 und 1 verboten
+        ti1_s1 = DigitalOutputDevice(23) # früher pin 28 jetzt gekreuzt mit ti2_s1 da gpio 0 und 1 verboten
         ti1_s2 = DigitalOutputDevice(4) # pin 7
         ti1_a = DigitalInputDevice(5) # pin 29
 
         ti2_s0 = DigitalOutputDevice(6) # pin 31
-        ti2_s1 = DigitalOutputDevice(23) # pin 16
-        ti2_s2 = DigitalOutputDevice(22) # pin 15
+        #ti2_s1 = DigitalOutputDevice(23) # früher pin 16 jetzt auf gnd verdrahtet da gpio 0 und 1 verboten
+        #ti2_s2 = DigitalOutputDevice(22) # früher pin 15 jetzt auf gnd verdrahtet da gpio 0 und 1 verboten
         ti2_a = DigitalInputDevice(12) # pin 32
 
         led_s0 = DigitalOutputDevice(13) # pin 33
@@ -51,8 +52,8 @@ def set_mux_ti2(i):
     bits = [int(b) for b in f"{i:03b}"][::-1]  # s0 = LSB
 
     ti2_s0.value = bits[0]
-    ti2_s1.value = bits[1]
-    ti2_s2.value = bits[2]
+    # ti2_s1.value = bits[1]
+    # ti2_s2.value = bits[2]
 
 def set_mux_led(i):
     if not 0 <= i <= 7:
