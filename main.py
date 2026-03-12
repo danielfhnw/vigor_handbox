@@ -101,8 +101,8 @@ if __name__ == '__main__':
             print("Fehler in main.py:", e)
         
         next_time += interval
-        sleep_time = next_time - time.time()
+        sleep_time = next_time - time()
         if sleep_time > 0:
-            time.sleep(sleep_time)
+            sleep(sleep_time)
         else:
-            next_time = time.time()
+            next_time = time()
