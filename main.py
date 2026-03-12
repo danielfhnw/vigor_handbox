@@ -51,8 +51,8 @@ def update():
     RedisAPI.set_value("hmi_state", statemachine_state)
     RedisAPI.set_value("hmi_vend_soll", Statemachine.get_vend_soll())
 
-    soll_l = Statemachine.get_soll()
-    soll_r = Statemachine.get_soll()
+    soll_l = Statemachine.get_soll()[0]
+    soll_r = Statemachine.get_soll()[1]
     MotorAPI.set_ref(soll_l, soll_r)
     RedisAPI.set_value("hmi_soll_l", get_str(soll_l) + "%")
     RedisAPI.set_value("hmi_soll_r", get_str(soll_r) + "%")
