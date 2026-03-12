@@ -51,6 +51,12 @@ def update():
     RedisAPI.set_value("hmi_state", statemachine_state)
     RedisAPI.set_value("hmi_vend_soll", Statemachine.get_vend_soll())
 
+    soll_l = Statemachine.get_soll()
+    soll_r = Statemachine.get_soll()
+    MotorAPI.set_ref(soll_l, soll_r)
+    RedisAPI.set_value("hmi_soll_l", get_str(soll_l) + "%")
+    RedisAPI.set_value("hmi_soll_r", get_str(soll_r) + "%")
+
     if statemachine_state == "EDGE_L" or statemachine_state == "EDGE_R" or statemachine_state == "AUTO":
         RedisAPI.set_value("hmi_soll_l", get_str(Statemachine.get_geo()[0]) + "%")
         RedisAPI.set_value("hmi_soll_r", get_str(Statemachine.get_geo()[1]) + "%")
