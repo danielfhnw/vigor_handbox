@@ -92,7 +92,7 @@ if __name__ == '__main__':
     init()
     
     interval = 0.1
-    next_time = time.time()
+    next_time = time()
 
     while True:
         try:
