@@ -8,7 +8,7 @@ from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 
 gpio_init_done = False
-device.pin_factory = PiGPIOFactory()
+Device.pin_factory = PiGPIOFactory()
 
 while not gpio_init_done:
     try:
