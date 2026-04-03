@@ -4,11 +4,11 @@
 from gpiozero import DigitalOutputDevice
 from gpiozero import DigitalInputDevice
 from gpiozero import Device
-from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero.pins.lgpio import LGPIOFactory
 import time
 
 gpio_init_done = False
-Device.pin_factory = PiGPIOFactory()
+Device.pin_factory = LGPIOFactory()
 
 while not gpio_init_done:
     try:
