@@ -9,7 +9,7 @@ import Statemachine
 
 
 def init():
-    RedisAPI.set_value("hmi_vend_soll", MotorAPI.get_vend()[0])
+    RedisAPI.set_value("hmi_vend_soll", (MotorAPI.get_vend()[0] - 100))
     Statemachine.soll_vend = MotorAPI.get_vend()[0]
     RedisAPI.set_value("hmi_state", "INIT")
 
