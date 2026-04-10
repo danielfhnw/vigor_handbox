@@ -34,8 +34,9 @@ state = "INIT"
 debounce_flag = False
 cal_released_flag = False
 lr_released_flag = False
+pause_released_flag = False
 enable_geo = True
-pause_bool = False
+blink_bool = False
 
 def get_soll():
     global soll_links, soll_rechts
@@ -75,7 +76,7 @@ def get_state():
     global debounce_flag, cal_released_flag, lr_released_flag
     global vend_curr, inverted
     global geo_l, geo_r
-    global enable_geo, pause_bool
+    global enable_geo, blink_bool
     oldstate = state
 
     if state == "INIT":
@@ -282,11 +283,11 @@ def get_state():
         else:
             soll_links = 0
             soll_rechts = 0
-            if not pause_bool:
+            if not blink_bool:
                 IOs.set_led(L1, True)
             else:
                 IOs.set_led(L7, True)
-            pause_bool = not pause_bool
+            blink_bool = not blink_bool
 
 
     elif state == "EDGE_L":
@@ -320,11 +321,11 @@ def get_state():
             IOs.set_led(L5, True)           
         else:
             soll_links = 0
-            if not pause_bool:
+            if not blink_bool:
                 IOs.set_led(L5, True)
             else:
                 IOs.set_led(L7, True)
-            pause_bool = not pause_bool
+            blink_bool = not blink_bool
 
 
 
@@ -358,11 +359,11 @@ def get_state():
             IOs.set_led(L5, True)            
         else:
             soll_rechts = 0
-            if not pause_bool:
+            if not blink_bool:
                 IOs.set_led(L5, True)
             else:
                 IOs.set_led(L7, True)
-            pause_bool = not pause_bool
+            blink_bool = not blink_bool
 
 
     if debounce_flag:
@@ -374,6 +375,6 @@ def get_state():
         soll_rechts = 0
         debounce_flag = True
         enable_geo = True
-        pause_bool = False
+        blink_bool = False
         cnt_vend = 0
     return state, not enable_geo
