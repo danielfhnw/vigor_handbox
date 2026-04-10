@@ -1,4 +1,4 @@
-# Version passend zu Vigor 5.0 (19.08.2025)
+# Version passend zu Vigor 1.0.0
 
 import sys
 from time import sleep, time
