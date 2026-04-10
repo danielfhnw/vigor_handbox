@@ -73,7 +73,7 @@ def get_state():
     global soll_links, soll_rechts
     global vend_soll
     global cnt_vend
-    global debounce_flag, cal_released_flag, lr_released_flag
+    global debounce_flag, cal_released_flag, lr_released_flag, pause_released_flag
     global vend_curr, inverted
     global geo_l, geo_r
     global enable_geo, blink_bool
@@ -298,8 +298,12 @@ def get_state():
         if IOs.get_button(B3):
             state = "MANUAL_L"
         if IOs.get_button(B4):
-            enable_geo = not enable_geo
-            debounce_flag = True
+            if pause_released_flag:
+                enable_geo = not enable_geo
+                debounce_flag = True
+                pause_released_flag = False
+        else:
+            pause_released_flag = True
         if IOs.get_button(B5):
             state = "CALIB"
         if IOs.get_button(B6):
@@ -337,8 +341,12 @@ def get_state():
         if IOs.get_button(B3):
             state = "MANUAL_L"
         if IOs.get_button(B4):
-            enable_geo = not enable_geo
-            debounce_flag = True
+            if pause_released_flag:
+                enable_geo = not enable_geo
+                debounce_flag = True
+                pause_released_flag = False
+        else:
+            pause_released_flag = True
         if IOs.get_button(B5):
             state = "CALIB"
         if IOs.get_button(B6):
@@ -353,6 +361,7 @@ def get_state():
                 lr_released_flag = False
         else:
             lr_released_flag = True
+
         geo_l, geo_r = MotorAPI.get_geo()
         if enable_geo:
             soll_rechts = geo_r
