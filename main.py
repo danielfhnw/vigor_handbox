@@ -9,7 +9,7 @@ import Statemachine
 
 
 def init():
-    RedisAPI.set_value("hmi_vend_soll", MotorAPI.get_vend()[0])
+    RedisAPI.set_value("hmi_vend_soll", (MotorAPI.get_vend()[0] - 100))
     Statemachine.soll_vend = MotorAPI.get_vend()[0]
     RedisAPI.set_value("hmi_state", "INIT")
 
@@ -49,7 +49,7 @@ def update():
     statemachine_state, paused = Statemachine.get_state()
     CM4API.send_hb_state(statemachine_state, paused)
     RedisAPI.set_value("hmi_state", statemachine_state)
-    RedisAPI.set_value("hmi_vend_soll", Statemachine.get_vend_soll())
+    RedisAPI.set_value("hmi_vend_soll", (Statemachine.get_vend_soll() - 100))
 
     soll_l = Statemachine.get_soll()[0]
     soll_r = Statemachine.get_soll()[1]
