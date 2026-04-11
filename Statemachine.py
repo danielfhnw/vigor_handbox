@@ -184,7 +184,7 @@ def get_state():
         if IOs.get_button(B3):
             state = "MANUAL_R"
         if IOs.get_button(B4):
-            state = "EDGE_L"
+            state = "EDGE_R"
         if IOs.get_button(B5):
             state = "CALIB"
         if IOs.get_button(B6):
@@ -338,7 +338,7 @@ def get_state():
         if IOs.get_button(B2):
             state = "SEMI"
         if IOs.get_button(B3):
-            state = "MANUAL_L"
+            state = "MANUAL_R"
         if IOs.get_button(B4):
             if pause_released_flag:
                 enable_geo = not enable_geo
