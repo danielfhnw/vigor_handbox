@@ -34,8 +34,9 @@ state = "INIT"
 debounce_flag = False
 cal_released_flag = False
 lr_released_flag = False
+pause_released_flag = False
 enable_geo = True
-pause_bool = False
+blink_bool = False
 
 def get_soll():
     global soll_links, soll_rechts
@@ -72,10 +73,10 @@ def get_state():
     global soll_links, soll_rechts
     global vend_soll
     global cnt_vend
-    global debounce_flag, cal_released_flag, lr_released_flag
+    global debounce_flag, cal_released_flag, lr_released_flag, pause_released_flag
     global vend_curr, inverted
     global geo_l, geo_r
-    global enable_geo, pause_bool
+    global enable_geo, blink_bool
     oldstate = state
 
     if state == "INIT":
@@ -222,7 +223,6 @@ def get_state():
             pass
         if IOs.get_button(B9):
             state = "MANUAL_L"
-            lr_released_flag = False
             MotorAPI.reset_errors()
             MotorAPI.reset_state()
 
@@ -282,11 +282,11 @@ def get_state():
         else:
             soll_links = 0
             soll_rechts = 0
-            if not pause_bool:
+            if not blink_bool:
                 IOs.set_led(L1, True)
             else:
                 IOs.set_led(L7, True)
-            pause_bool = not pause_bool
+            blink_bool = not blink_bool
 
 
     elif state == "EDGE_L":
@@ -297,8 +297,12 @@ def get_state():
         if IOs.get_button(B3):
             state = "MANUAL_L"
         if IOs.get_button(B4):
-            enable_geo = not enable_geo
-            debounce_flag = True
+            if pause_released_flag:
+                enable_geo = not enable_geo
+                debounce_flag = True
+                pause_released_flag = False
+        else:
+            pause_released_flag = True
         if IOs.get_button(B5):
             state = "CALIB"
         if IOs.get_button(B6):
@@ -320,11 +324,11 @@ def get_state():
             IOs.set_led(L5, True)           
         else:
             soll_links = 0
-            if not pause_bool:
+            if not blink_bool:
                 IOs.set_led(L5, True)
             else:
                 IOs.set_led(L7, True)
-            pause_bool = not pause_bool
+            blink_bool = not blink_bool
 
 
 
@@ -336,8 +340,12 @@ def get_state():
         if IOs.get_button(B3):
             state = "MANUAL_L"
         if IOs.get_button(B4):
-            enable_geo = not enable_geo
-            debounce_flag = True
+            if pause_released_flag:
+                enable_geo = not enable_geo
+                debounce_flag = True
+                pause_released_flag = False
+        else:
+            pause_released_flag = True
         if IOs.get_button(B5):
             state = "CALIB"
         if IOs.get_button(B6):
@@ -352,17 +360,18 @@ def get_state():
                 lr_released_flag = False
         else:
             lr_released_flag = True
+
         geo_l, geo_r = MotorAPI.get_geo()
         if enable_geo:
             soll_rechts = geo_r
             IOs.set_led(L5, True)            
         else:
             soll_rechts = 0
-            if not pause_bool:
+            if not blink_bool:
                 IOs.set_led(L5, True)
             else:
                 IOs.set_led(L7, True)
-            pause_bool = not pause_bool
+            blink_bool = not blink_bool
 
 
     if debounce_flag:
@@ -374,6 +383,9 @@ def get_state():
         soll_rechts = 0
         debounce_flag = True
         enable_geo = True
-        pause_bool = False
+        blink_bool = False
         cnt_vend = 0
-    return state, enable_geo
+        pause_released_flag = False
+        lr_released_flag = False
+        cal_released_flag = False
+    return state, not enable_geo
