@@ -223,7 +223,6 @@ def get_state():
             pass
         if IOs.get_button(B9):
             state = "MANUAL_L"
-            lr_released_flag = False
             MotorAPI.reset_errors()
             MotorAPI.reset_state()
 
@@ -386,4 +385,7 @@ def get_state():
         enable_geo = True
         blink_bool = False
         cnt_vend = 0
+        pause_released_flag = False
+        lr_released_flag = False
+        cal_released_flag = False
     return state, not enable_geo
