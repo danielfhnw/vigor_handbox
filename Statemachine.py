@@ -131,12 +131,20 @@ def get_state():
         if IOs.get_button(B7):
             soll_links = 0
         if IOs.get_button(B8):
-            if vend_soll < 910:
-                vend_soll += 5
+            if not inverted:
+                if vend_soll < 910:
+                    vend_soll += 5
+            else:
+                if vend_soll > 100:
+                    vend_soll -= 5
             cnt_vend = 0
         if IOs.get_button(B9):
-            if vend_soll > 100:
-                vend_soll -= 5
+            if not inverted:
+                if vend_soll > 100:
+                    vend_soll -= 5
+            else:
+                if vend_soll < 910:
+                    vend_soll += 5
             cnt_vend = 0
 
         if cnt_vend < 10:
