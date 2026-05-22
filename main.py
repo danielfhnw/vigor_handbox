@@ -9,10 +9,7 @@ import Statemachine
 
 
 def init():
-    if not MotorAPI.get_inversion()[0]:
-        Statemachine.vend_soll = MotorAPI.get_vend()[0]
-    else:
-        Statemachine.vend_soll = 910 - MotorAPI.get_vend()[0]
+    Statemachine.vend_soll = MotorAPI.get_vend()[0]
     RedisAPI.set_value("hmi_state", "INIT")
 
 def update():
