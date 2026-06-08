@@ -37,6 +37,7 @@ lr_released_flag = False
 pause_released_flag = False
 enable_geo = True
 blink_bool = False
+schleppzeiger = False
 
 def get_soll():
     global soll_links, soll_rechts
@@ -76,7 +77,7 @@ def get_state():
     global debounce_flag, cal_released_flag, lr_released_flag, pause_released_flag
     global vend_curr, inverted
     global geo_l, geo_r
-    global enable_geo, blink_bool
+    global enable_geo, blink_bool, schleppzeiger
     oldstate = state
 
     if state == "INIT":
@@ -124,28 +125,45 @@ def get_state():
         else:
             cnt_vend = 0
         if IOs.get_button(B6):
+            schleppzeiger = True
             if inverted: 
-                soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
+                vend_soll = 910
             else:
-                soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
+                vend_soll = 0
         if IOs.get_button(B7):
             soll_links = 0
         if IOs.get_button(B8):
+            schleppzeiger = False
             if not inverted:
                 if vend_soll < 910:
-                    vend_soll += 5
+                    vend_soll += 1
+                    soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
             else:
                 if vend_soll > 100:
-                    vend_soll -= 5
+                    vend_soll -= 1
+                    soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
             cnt_vend = 0
         if IOs.get_button(B9):
+            schleppzeiger = False
             if not inverted:
                 if vend_soll > 100:
-                    vend_soll -= 5
+                    vend_soll -= 1
+                    soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
             else:
                 if vend_soll < 910:
-                    vend_soll += 5
+                    vend_soll += 1
+                    soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
             cnt_vend = 0
+
+        if schleppzeiger:
+            if inverted: 
+                if vend_soll > 100:
+                    vend_soll -= 1
+                soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
+            else:
+                if vend_soll < 910:
+                    vend_soll += 1
+                soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
 
         if cnt_vend < 10:
             IOs.set_led(L4, True)
