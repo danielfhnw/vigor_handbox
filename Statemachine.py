@@ -152,10 +152,13 @@ def get_state():
             cnt_vend = 0
 
         if schleppzeiger:
-            vend_soll += 1
             if inverted: 
+                if vend_soll > 100:
+                    vend_soll -= 1
                 soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
             else:
+                if vend_soll < 910:
+                    vend_soll += 1
                 soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
 
         if cnt_vend < 10:
