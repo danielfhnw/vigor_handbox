@@ -127,9 +127,9 @@ def get_state():
         if IOs.get_button(B6):
             schleppzeiger = True
             if inverted: 
-                soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
+                vend_soll = 910
             else:
-                soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
+                vend_soll = 0
         if IOs.get_button(B7):
             soll_links = 0
         if IOs.get_button(B8):
@@ -153,6 +153,10 @@ def get_state():
 
         if schleppzeiger:
             vend_soll += 1
+            if inverted: 
+                soll_links = round((910 - vend_soll) / (910 - vend_curr) * 100)
+            else:
+                soll_links = round((vend_soll - 100) / (vend_curr - 100) * 100)
 
         if cnt_vend < 10:
             IOs.set_led(L4, True)
